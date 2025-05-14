@@ -15,8 +15,8 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class DockerCodeRunner {
 
-  private static final String CPP_DOCKER_IMAGE = "cpp-sandbox:latest";
-  private static final String PYTHON_DOCKER_IMAGE = "python-sandbox:latest";
+  private static final String CPP_DOCKER_IMAGE = "dtoloknov068/cpp-sandbox:latest";
+  private static final String PYTHON_DOCKER_IMAGE = "dtoloknov068/python-sandbox:latest";
 
   public static String runCode(String code, Integer timeLimit, Integer memoryLimit, String inputData, TaskLanguage taskLanguage) throws IOException, InterruptedException {
     if (taskLanguage == TaskLanguage.CPP) {
