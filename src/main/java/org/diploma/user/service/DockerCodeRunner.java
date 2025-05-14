@@ -64,6 +64,7 @@ public class DockerCodeRunner {
 
     if (exitCode != 0) {
       if (errors.contains("Killed") || errors.contains("killed signal") || errors.contains("fatal error") && errors.contains("cc1plus")) {
+        System.out.println(errors);
         return "Превышен лимит памяти";
       }
       throw new RuntimeException("Ошибка выполнения: " + errors);
