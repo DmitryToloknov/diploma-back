@@ -36,7 +36,7 @@ public class SecurityConfigForKeycloak {
         .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
       .csrf(AbstractHttpConfigurer::disable)
       .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-      .addFilterBefore(securityFilter(), UsernamePasswordAuthenticationFilter.class)
+//      .addFilterBefore(securityFilter(), UsernamePasswordAuthenticationFilter.class)
       .build();
   }
 
@@ -75,10 +75,10 @@ public class SecurityConfigForKeycloak {
     return converter;
   }
 
-  @Bean
-  public SecurityFilter securityFilter() {
-    return new SecurityFilter(keycloakProperties());
-  }
+//  @Bean
+//  public SecurityFilter securityFilter() {
+//    return new SecurityFilter(keycloakProperties());
+//  }
 
   @Bean
   public KeycloakProperties keycloakProperties() {
