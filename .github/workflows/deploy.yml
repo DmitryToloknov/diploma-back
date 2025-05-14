@@ -1,0 +1,58 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+          distribution: 'corretto'
+
+      - name: Extract version from pom.xml
+        id: get_version
+        run: |
+          VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          echo "::set-output name=version::$VERSION"
+
+      - name: Build jar with Maven
+        run: mvn clean package -DskipTests
+
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKERHUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
+
+      - name: Build Docker image
+        run: docker build -t ${{ secrets.NAME_DOCKER_HUB }}/agu-back:${{ env.VERSION }} .
+
+      - name: Push Docker image
+        run: docker push ${{ secrets.NAME_DOCKER_HUB }}/agu-back:${{ env.VERSION }}
+
+      - name: Deploy to remote server
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            docker stop agu-back || true
+            docker rm agu-back || true
+            docker pull ${{ secrets.NAME_DOCKER_HUB }}/agu-back:${{ env.VERSION }}
+            docker run -d \
+              --name agu-back \
+              --env-file /home/${{ secrets.SSH_USER }}/diplom/.env \
+              --network agu-net \
+              --restart unless-stopped \
+              -p 8082:8082 \
+              -e TZ=Europe/Moscow \
+              ${{ secrets.NAME_DOCKER_HUB }}/agu-back:${{ env.VERSION }}
