@@ -1,0 +1,2 @@
+insert into agu_groups (id, name, short_name, status, year, curator_id, creator_id, created_date_time, updated_date_time)
+values (gen_random_uuid(), 'Информатика и выч техника', 'ИВТ', true, 2021, NULL, gen_random_uuid(), now(), now())
