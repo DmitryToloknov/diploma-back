@@ -54,5 +54,6 @@ jobs:
               --network agu-net \
               --restart unless-stopped \
               -p 8082:8082 \
+              -v /var/run/docker.sock:/var/run/docker.sock \
               -e TZ=Europe/Moscow \
               ${{ secrets.NAME_DOCKER_HUB }}/agu-back:${{ env.VERSION }}
