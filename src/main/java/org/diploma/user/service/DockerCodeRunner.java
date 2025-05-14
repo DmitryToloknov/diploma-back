@@ -74,20 +74,6 @@ public class DockerCodeRunner {
   }
 
   private static Process getProcess(Integer memoryLimit, String dockerImage, Path tempDir) throws IOException {
-//    ProcessBuilder processBuilder = new ProcessBuilder(
-//        "docker", "run",
-//        "--rm",
-//        "--net=none",
-//        "--cpus=1.0",
-//        "--memory=" + memoryLimit + "m",
-//        "--memory-swap=" + memoryLimit + "m",
-//        "--pids-limit=64",
-//        "--read-only",
-//        "--security-opt", "no-new-privileges=true",
-//        "-v", tempDir.toAbsolutePath() + ":/sandbox",
-//        dockerImage
-//    );
-
     ProcessBuilder processBuilder = new ProcessBuilder(
         "docker", "run",
         "--rm",
@@ -96,12 +82,10 @@ public class DockerCodeRunner {
         "--memory=" + memoryLimit + "m",
         "--memory-swap=" + memoryLimit + "m",
         "--pids-limit=64",
-//        "--read-only",
+        "--read-only",
         "--security-opt", "no-new-privileges=true",
         "-v", tempDir.toAbsolutePath() + ":/sandbox",
-        dockerImage,
-        "sh", "-c",
-        "cd /sandbox && g++ main.cpp -o main && ./main < input.txt"
+        dockerImage
     );
 
     // Устанавливаем таймаут внешне через Java
