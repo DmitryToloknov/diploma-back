@@ -96,7 +96,7 @@ public class DockerCodeRunner {
         "--memory=" + memoryLimit + "m",
         "--memory-swap=" + memoryLimit + "m",
         "--pids-limit=64",
-        "--read-only",
+//        "--read-only",
         "--security-opt", "no-new-privileges=true",
         "-v", tempDir.toAbsolutePath() + ":/sandbox",
         dockerImage,
