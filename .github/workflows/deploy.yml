@@ -55,5 +55,6 @@ jobs:
               --restart unless-stopped \
               -p 8082:8082 \
               -v /var/run/docker.sock:/var/run/docker.sock \
+              -v /home/diplom2025/job:/tmp/
               -e TZ=Europe/Moscow \
               ${{ secrets.NAME_DOCKER_HUB }}/agu-back:${{ env.VERSION }}
