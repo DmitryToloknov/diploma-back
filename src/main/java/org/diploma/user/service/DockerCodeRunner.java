@@ -74,7 +74,8 @@ public class DockerCodeRunner {
   }
 
   private static Process getProcess(Integer memoryLimit, String dockerImage, Path tempDir) throws IOException {
-    System.err.println(tempDir.toAbsolutePath());
+    System.err.println("string"+tempDir.toString());
+    System.err.println("uri" + tempDir.toUri());
     ProcessBuilder processBuilder = new ProcessBuilder(
         "docker", "run",
         "--rm",
