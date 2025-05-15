@@ -91,7 +91,7 @@ public class DockerCodeRunner {
         "--pids-limit=64",
         "--read-only",
         "--security-opt", "no-new-privileges=true",
-        "-v", "home/diplom2025/job" + path + ":/sandbox",
+        "-v", "/home/diplom2025/job" + path + ":/sandbox",
         dockerImage
     );
 
