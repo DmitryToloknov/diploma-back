@@ -18,7 +18,8 @@ public class DockerCodeRunner {
   private static final String CPP_DOCKER_IMAGE = "dtoloknov068/cpp-sandbox:latest";
   private static final String PYTHON_DOCKER_IMAGE = "dtoloknov068/python-sandbox:latest";
 
-  public static String runCode(String code, Integer timeLimit, Integer memoryLimit, String inputData, TaskLanguage taskLanguage) throws IOException, InterruptedException {
+  public static String runCode(String code, Integer timeLimit, Integer memoryLimit, String inputData,
+                               TaskLanguage taskLanguage) throws IOException, InterruptedException {
     if (taskLanguage == TaskLanguage.CPP) {
       return runCppCode(code, timeLimit, memoryLimit, inputData);
     } else {
@@ -26,15 +27,18 @@ public class DockerCodeRunner {
     }
   }
 
-  public static String runCppCode(String code, Integer timeLimit, Integer memoryLimit, String inputData) throws IOException, InterruptedException {
+  public static String runCppCode(String code, Integer timeLimit, Integer memoryLimit, String inputData)
+      throws IOException, InterruptedException {
     return runInDocker(code, inputData, timeLimit, memoryLimit, CPP_DOCKER_IMAGE, "main.cpp");
   }
 
-  public static String runPythonCode(String code, Integer timeLimit, Integer memoryLimit, String inputData) throws IOException, InterruptedException {
+  public static String runPythonCode(String code, Integer timeLimit, Integer memoryLimit, String inputData)
+      throws IOException, InterruptedException {
     return runInDocker(code, inputData, timeLimit, memoryLimit, PYTHON_DOCKER_IMAGE, "main.py");
   }
 
-  private static String runInDocker(String code, String inputData, Integer timeLimit, Integer memoryLimit, String dockerImage, String fileName)
+  private static String runInDocker(String code, String inputData, Integer timeLimit, Integer memoryLimit,
+                                    String dockerImage, String fileName)
       throws IOException, InterruptedException {
 
     String jobId = UUID.randomUUID().toString();
@@ -63,7 +67,8 @@ public class DockerCodeRunner {
     deleteDirectory(tempDir);
 
     if (exitCode != 0) {
-      if (errors.contains("Killed") || errors.contains("killed signal") || errors.contains("fatal error") && errors.contains("cc1plus")) {
+      if (errors.contains("Killed") || errors.contains("killed signal") ||
+          errors.contains("fatal error") && errors.contains("cc1plus")) {
         System.out.println(errors);
         return "Превышен лимит памяти";
       }
@@ -74,8 +79,8 @@ public class DockerCodeRunner {
   }
 
   private static Process getProcess(Integer memoryLimit, String dockerImage, Path tempDir) throws IOException {
-    System.err.println("string"+tempDir.toString());
-    System.err.println("uri" + tempDir.toUri());
+    var path = tempDir.toString().substring(4);
+    System.err.println(path);
     ProcessBuilder processBuilder = new ProcessBuilder(
         "docker", "run",
         "--rm",
@@ -86,7 +91,7 @@ public class DockerCodeRunner {
         "--pids-limit=64",
         "--read-only",
         "--security-opt", "no-new-privileges=true",
-        "-v", tempDir.toAbsolutePath() + ":/sandbox",
+        "-v", "home/diplom2025/job" + path + ":/sandbox",
         dockerImage
     );
 
