@@ -41,5 +41,4 @@ public interface KeycloakAdminClient {
   @DeleteMapping("/users/{id}/role-mappings/realm")
   ResponseEntity deleteRoles(@RequestHeader("Authorization") String tokenClient,
                              @RequestBody List<RoleResponse> roleResponses, @PathVariable UUID id);
-
 }

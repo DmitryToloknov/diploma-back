@@ -2,8 +2,10 @@ package org.diploma.user.controller.skill;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.diploma.user.controller.course.dto.CourseProgress;
 import org.diploma.user.controller.skill.dto.CreateSkillDto;
 import org.diploma.user.controller.skill.dto.ResponseSkill;
+import org.diploma.user.controller.skill.dto.SkillUser;
 import org.diploma.user.service.SkillService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -35,6 +37,11 @@ public class SkillController {
   @PreAuthorize("hasRole('COURSE_UPDATE') || hasRole('ADMIN')")
   public ResponseEntity<List<ResponseSkill>> getSkills() {
     return ResponseEntity.ok(skillService.getSkills());
+  }
+
+  @GetMapping("/user")
+  public ResponseEntity<List<SkillUser>> getCourseProcesses(Authentication authentication) {
+    return ResponseEntity.ok(skillService.getUserSkills(UUID.fromString(authentication.getName())));
   }
 
 }

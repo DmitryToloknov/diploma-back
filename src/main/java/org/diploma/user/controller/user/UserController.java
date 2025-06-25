@@ -61,6 +61,11 @@ public class UserController {
     return ResponseEntity.ok(userService.getUserById(id));
   }
 
+  @GetMapping("/info")
+  public ResponseEntity<ResponseUser> getUserInfoById(Authentication authentication) {
+    return ResponseEntity.ok(userService.getUserById(UUID.fromString(authentication.getName())));
+  }
+
   @PutMapping("/{id}")
   @PreAuthorize("hasRole('ADMIN')|| hasRole('USER_UPDATE')")
   public ResponseEntity updateUser(@PathVariable UUID id, @RequestBody @Valid UpdateUserRequest updateUserRequest) {

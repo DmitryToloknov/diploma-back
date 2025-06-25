@@ -3,6 +3,7 @@ package org.diploma.user.controller.course;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.diploma.user.controller.course.dto.CourseInfo;
+import org.diploma.user.controller.course.dto.CourseProgress;
 import org.diploma.user.controller.course.dto.FilterCourse;
 import org.diploma.user.controller.course.dto.ResponseCourse;
 import org.diploma.user.controller.course.dto.ResponseCourseInfo;
@@ -92,6 +93,11 @@ public class CourseController {
   @GetMapping("/info/{id}")
   public ResponseEntity<ResponseCourseInfo> getInfoCourse(Authentication authentication, @PathVariable UUID id) {
     return ResponseEntity.ok(courseService.getCourseInfo(authentication, id));
+  }
+
+  @GetMapping("/progress")
+  public ResponseEntity<List<CourseProgress>> getCourseProcesses(Authentication authentication) {
+    return ResponseEntity.ok(courseService.getProgressCourse(UUID.fromString(authentication.getName())));
   }
 
 }
