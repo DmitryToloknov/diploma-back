@@ -2,21 +2,27 @@ package org.diploma.user.service;
 
 import lombok.RequiredArgsConstructor;
 import org.diploma.user.Entity.Course;
+import org.diploma.user.Entity.Task;
 import org.diploma.user.Predicate.CoursePredicate;
 import org.diploma.user.controller.course.dto.CourseInfo;
+import org.diploma.user.controller.course.dto.CourseProgress;
 import org.diploma.user.controller.course.dto.FilterCourse;
 import org.diploma.user.controller.course.dto.ResponseCourse;
 import org.diploma.user.controller.course.dto.ResponseCourseInfo;
 import org.diploma.user.controller.task.dto.ResponseTaskInfo;
 import org.diploma.user.exception.CustomException;
 import org.diploma.user.mapper.CourseMapper;
+import org.diploma.user.repository.AttemptRepository;
 import org.diploma.user.repository.CourseRepository;
 import org.diploma.user.repository.CourseRepositoryCustom;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import static org.diploma.user.exception.ExceptionMessageConstants.COURSE_NOT_FOUND;
 import static org.diploma.user.exception.ExceptionMessageConstants.TASK_EXIST_IN_COURSE;
@@ -33,6 +39,7 @@ public class CourseService {
   private final TaskService taskService;
   private final CoursePredicate coursePredicate;
   private final CourseRepositoryCustom courseRepositoryCustom;
+  private final AttemptRepository attemptRepository;
 
   public UUID createCourse(UUID creatorId) {
     var course = new Course();
@@ -132,6 +139,30 @@ public class CourseService {
       }
     }
     return courseMapper.mapResponseCourseInfo(course);
+  }
+
+  public List<CourseProgress> getProgressCourse(UUID userId) {
+    var attempts = attemptRepository.findAttemptByUserId(userId);
+    var courseIds = attempts.stream().map(attempt -> attempt.getCourse().getId()).toList();
+    var user = userService.findUserOrThrow(userId);
+    var courses = courseRepository.findCourseByIdAndGroupId(courseIds, user.getGroup().getId());
+
+    Map<UUID, Integer> estimationSumByCourse = attempts.stream()
+        .collect(Collectors.groupingBy(
+            attempt -> attempt.getCourse().getId(),
+            Collectors.summingInt(attempt -> attempt.getEstimation() != null ? attempt.getEstimation() : 0)
+        ));
+    List<CourseProgress> courseProgresses = new ArrayList<>();
+    courses.forEach(course -> {
+      var courseProgress = new CourseProgress();
+      courseProgress.setId(course.getId());
+      courseProgress.setName(course.getName());
+      courseProgress.setEstimationActual(estimationSumByCourse.getOrDefault(course.getId(), 0));
+      var estimation = course.getTasks().stream().mapToInt(Task::getEstimation).sum();
+      courseProgress.setEstimation(estimation);
+      courseProgresses.add(courseProgress);
+    });
+    return courseProgresses;
   }
 
 }

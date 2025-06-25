@@ -57,4 +57,20 @@ public interface AttemptRepository extends CrudRepository<Attempt, UUID> {
       """)
   List<Attempt> findByTaskId(List<Long> taskIds, UUID courseId, TaskStatus status, UUID userId);
 
+  @Query("""
+      SELECT a
+      from Attempt a
+             JOIN FETCH a.course
+      where a.user.id =:id
+      """)
+  List<Attempt> findAttemptByUserId(UUID id);
+
+  @Query("""
+      SELECT a
+      from Attempt a
+             JOIN FETCH a.task
+      where a.user.id =:id and a.status = 'SUCCESS'
+      """)
+  List<Attempt> findSuccessAttemptByUserId(UUID id);
+
 }
